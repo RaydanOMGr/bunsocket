@@ -38,7 +38,8 @@ Before running this application you should configure it
     "address": "192.168.178.70:5310",
     "inputFile": "input/input.js",
     "secure": false,
-    "time": false
+    "time": false,
+    "prefix": true
   }
   ```
   This is the important part of the config if you want to run the client
@@ -46,3 +47,4 @@ Before running this application you should configure it
   - inputFile: The file that contains the code that should be sent and executed on the server.
   - secure: Whetever the application should connect securely (wss) or insecurely (ws). (Use only if you have SSL/TLS, otherwise it will not work)
   - time: Whetever the server should run `time {runtime}` instead of just the runtime so you know how long the code took to run.
+  - prefix: Whetever the prefix ( [Output] or [Error] ) should be displayed
