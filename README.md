@@ -1,5 +1,6 @@
 # BunSocket
 BunSocket (or bunSocket) is a nodejs application that connect to a remote device running this same application in server mode with the purpose of running bun on a device that only supports node (for example on termux)
+
 (Do **not** use it with a malicious intent)
 
 ## Setup and run
