@@ -1,10 +1,13 @@
 # BunSocket
 BunSocket (or bunSocket) is a nodejs application that connect to a remote device running this same application in server mode with the purpose of running bun on a device that only supports node (for example on termux)
+
 (Do **not** use it with a malicious intent)
 
 ## Setup and run
 To run this application you need to download it (you may do it however you like, through github or git) and configure it (see below)
+
 Once configured:
+
   **Client**
   - Put your code in the client/input/**input.js** file
   - Run `npm run client` and look at the server executing the code
@@ -14,6 +17,7 @@ Once configured:
 
 ## Config
 Before running this application you should configure it
+
  **Running a server**
   ```js
   export let serverConfig = {
