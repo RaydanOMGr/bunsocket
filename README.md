@@ -4,6 +4,7 @@ BunSocket (or bunSocket) is a nodejs application that connect to a remote device
 
 ## Setup and run
 To run this application you need to download it (you may do it however you like, through github or git) and configure it (see below)
+
 Once configured:
 
   **Client**
