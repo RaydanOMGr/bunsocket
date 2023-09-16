@@ -3,7 +3,7 @@ import { serverConfig } from '../config.js';
 import * as fs from 'fs';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import { dirname, join } from 'path';
 
 let config = serverConfig;
 
@@ -18,6 +18,24 @@ let runtime = config.runtime;
 
 console.log('Listening on port ' + config.port + ' now!');
 
+let tmpPath = __dirname + "/tmp/";
+
+fs.readdir(tmpPath, (err, files) => {
+    if (err) {
+        console.error('Error reading folder:', err);
+        return;
+    }
+
+    files.forEach(file => {
+        const filePath = join(tmpPath, file);
+        fs.unlink(filePath, err => {
+            if (err) {
+                console.error(`Error deleting file ${filePath}:`, err);
+            }
+        });
+    });
+});
+
 let sessions = 0;
 
 wss.on('connection', function connection(ws) {
@@ -27,8 +45,8 @@ wss.on('connection', function connection(ws) {
         const data = JSON.parse(rawData);
         if(data.type === "code") {
             sessions++;
-            fs.writeFileSync(`${__dirname}/tmp/session${sessions}.js`, data.content);
-            let child = spawn(runtime, [`${__dirname}/tmp/session${sessions}.js`]);
+            fs.writeFileSync(`${tmpPath}/session${sessions}.js`, data.content);
+            let child = spawn(runtime, [`${tmpPath}/session${sessions}.js`]);
             child.stdout.on('data', (data) => {
                 ws.send(JSON.stringify({ 'type': 'output', 'content': data.toString() }));
             });
@@ -41,8 +59,8 @@ wss.on('connection', function connection(ws) {
             });
         } else if(data.type === 'timeCode') {
             sessions++;
-            fs.writeFileSync(`${__dirname}/tmp/session${sessions}.js`, data.content);
-            let child = spawn(`time`, [runtime, `${__dirname}/tmp/session${sessions}.js`]);
+            fs.writeFileSync(`${tmpPath}/session${sessions}.js`, data.content);
+            let child = spawn(`time`, [runtime, `${tmpPath}/session${sessions}.js`]);
             child.stdout.on('data', (data) => {
                 ws.send(JSON.stringify({ 'type': 'output', 'content': data.toString() }));
             });
