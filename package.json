@@ -1,0 +1,21 @@
+{
+  "name": "bunsocket",
+  "version": "1.0.0",
+  "description": "",
+  "main": "client/index.js",
+  "type": "module",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "strip-ansi": "^7.1.0",
+    "ws": "latest"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "client": "node client/index.js",
+    "server": "node server/index.js",
+    "install": "npm i"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
