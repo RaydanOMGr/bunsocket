@@ -1,21 +1,23 @@
 {
   "name": "bunsocket",
   "version": "1.0.0",
-  "description": "",
+  "description": "BunSocket (or bunSocket) is a nodejs application that connect to a remote device running this same application in server mode with the purpose of running bun on a device that only supports node (for example on termux or windows)",
   "main": "client/index.js",
   "type": "module",
   "dependencies": {
     "chalk": "^5.3.0",
-    "strip-ansi": "^7.1.0",
-    "ws": "latest"
+    "ws": "^8.14.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "client": "node client/index.js",
     "server": "node server/index.js",
-    "install": "npm i"
+    "bunServer": "bun server/index.js",
+    "bunClient": "bun client/index.js",
+    "nodeServer": "node server/index.js",
+    "nodeClient": "node client/index.js"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "author": "RaydanOMGr/AndreasMelone",
+  "license": "MIT"
 }

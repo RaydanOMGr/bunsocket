@@ -18,7 +18,22 @@ let runtime = config.runtime;
 
 console.log('Listening on port ' + config.port + ' now!');
 
-let tmpPath = __dirname + "/tmp/";
+
+let tmpPath = join(__dirname, 'tmp');
+
+
+try {
+    const stats = fs.statSync(tmpPath);
+    if (!stats.isDirectory()) {
+        console.error('Error checking tmp folder: not a directory');
+    }
+} catch (err) {
+    if (err.code === 'ENOENT') {
+        fs.mkdirSync(tmpPath);
+    } else {
+        console.error('Error checking tmp folder:', err);
+    }
+}
 
 fs.readdir(tmpPath, (err, files) => {
     if (err) {
@@ -43,30 +58,48 @@ wss.on('connection', function connection(ws) {
 
     ws.on('message', function message(rawData) {
         const data = JSON.parse(rawData);
-        if(data.type === "code") {
-            sessions++;
-            fs.writeFileSync(`${tmpPath}/session${sessions}.js`, data.content);
-            let child = spawn(runtime, [`${tmpPath}/session${sessions}.js`]);
+        let child;
+        let command;
+
+        switch (data.type) {
+            case 'code':
+                sessions++;
+                const codeFilePath = join(tmpPath, `session${sessions}.js`);
+                fs.writeFileSync(codeFilePath, data.content);
+                command = [runtime, codeFilePath];
+                break;
+            case 'timeCode':
+                sessions++;
+                const timeCodeFilePath = join(tmpPath, `session${sessions}.js`);
+                fs.writeFileSync(timeCodeFilePath, data.content);
+                command = ['time', runtime, timeCodeFilePath];
+                break;
+            default:
+                break;
+        }
+
+        if (command) {
+            let runtime = command[0];
+            let args = command.slice(1);
+
+            try {
+                child = spawn(runtime, args);
+            } catch (err) {
+                ws.send(JSON.stringify({ 'type': 'error', 'content': err.toString() }));
+            }
+
             child.stdout.on('data', (data) => {
                 ws.send(JSON.stringify({ 'type': 'output', 'content': data.toString() }));
             });
             child.stderr.on('data', (data) => {
                 ws.send(JSON.stringify({ 'type': 'error', 'content': data.toString() }));
             });
-            child.on('close', () => {
-                ws.send(JSON.stringify({ 'type': 'close' }));
-                ws.close();
+
+            child.on('error', (err) => {
+                ws.send(JSON.stringify({ 'type': 'error', 'content': err.toString() }));
+                ws.send(JSON.stringify({ 'type': 'error', 'content': 'This might indicate that the runtime (node or bun) might not be installed on the server.' }));
             });
-        } else if(data.type === 'timeCode') {
-            sessions++;
-            fs.writeFileSync(`${tmpPath}/session${sessions}.js`, data.content);
-            let child = spawn(`time`, [runtime, `${tmpPath}/session${sessions}.js`]);
-            child.stdout.on('data', (data) => {
-                ws.send(JSON.stringify({ 'type': 'output', 'content': data.toString() }));
-            });
-            child.stderr.on('data', (data) => {
-                ws.send(JSON.stringify({ 'type': 'error', 'content': data.toString() }));
-            });
+
             child.on('close', () => {
                 ws.send(JSON.stringify({ 'type': 'close' }));
                 ws.close();
