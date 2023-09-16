@@ -16,6 +16,7 @@ Once configured:
 
 ## Config
 Before running this application you should configure it
+
  **Running a server**
   ```js
   export let serverConfig = {
